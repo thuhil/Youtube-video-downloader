@@ -17,10 +17,12 @@ export enum VideoQuality {
   WORST = 'Worst/Low Data',
 }
 
+export type DownloadStatus = 'idle' | 'fetching_info' | 'downloading' | 'converting' | 'completed' | 'error';
+
 export interface DownloadState {
   isDownloading: boolean;
   progress: number;
-  status: string; // 'idle' | 'fetching_info' | 'downloading' | 'converting' | 'completed' | 'error'
+  status: DownloadStatus;
   error?: string;
   downloadUrl?: string;
 }

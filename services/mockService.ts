@@ -1,4 +1,4 @@
-import { VideoMetadata } from '../types';
+import { VideoMetadata, DownloadStatus } from '../types';
 
 // This service mocks the backend behavior since we are running in a client-side environment.
 // In a real application, this would communicate with a Python/Flask/FastAPI backend running yt-dlp.
@@ -6,27 +6,32 @@ import { VideoMetadata } from '../types';
 export const fetchVideoMetadata = async (url: string): Promise<VideoMetadata> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      if (url.includes('youtube') || url.includes('youtu.be')) {
         resolve({
           title: "Sample YouTube Video - Amazing Content",
           thumbnail: "https://picsum.photos/seed/yt/640/360",
           duration: "10:25",
         });
-      } else if (url.includes('instagram.com')) {
+      } else if (url.includes('instagram')) {
         resolve({
           title: "Instagram Reel #Trending",
           thumbnail: "https://picsum.photos/seed/insta/640/640",
           duration: "00:45",
         });
       } else {
-        reject(new Error("Invalid URL or unsupported platform"));
+         // Fallback for valid URLs that don't match the specific strings above in this mock
+        resolve({
+            title: "Generic Video Content",
+            thumbnail: "https://picsum.photos/seed/other/640/360",
+            duration: "05:00",
+        });
       }
     }, 1500);
   });
 };
 
 export const simulateDownloadProcess = (
-  onProgress: (progress: number, status: string) => void
+  onProgress: (progress: number, status: DownloadStatus) => void
 ): Promise<string> => {
   return new Promise((resolve) => {
     let progress = 0;
@@ -46,7 +51,8 @@ export const simulateDownloadProcess = (
         progress = 100;
         onProgress(100, 'completed');
         clearInterval(interval);
-        resolve("https://example.com/download/video_file.mp4");
+        // Return a real sample video URL for demonstration purposes so the button works
+        resolve("https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4");
       }
     }, 200);
   });

@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   options: { label: string; value: string }[];
 }
 
-export const Select: React.FC<SelectProps> = ({ label, options, className, ...props }) => {
+export const Select: React.FC<SelectProps> = ({ label, options, className, id, ...props }) => {
+  const generatedId = useId();
+  const selectId = id || generatedId;
+
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">
+      <label htmlFor={selectId} className="block text-sm font-medium text-slate-300 mb-1.5">
         {label}
       </label>
       <div className="relative">
         <select
+          id={selectId}
           className={`
             w-full bg-slate-800 border border-slate-700 text-white rounded-lg py-2.5 px-3
             focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500

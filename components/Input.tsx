@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { LucideIcon } from 'lucide-react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -7,10 +7,13 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, className, ...props }) => {
+export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, className, id, ...props }) => {
+  const generatedId = useId();
+  const inputId = id || generatedId;
+
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-slate-300 mb-1.5">
+      <label htmlFor={inputId} className="block text-sm font-medium text-slate-300 mb-1.5">
         {label}
       </label>
       <div className="relative group">
@@ -20,6 +23,7 @@ export const Input: React.FC<InputProps> = ({ label, icon: Icon, error, classNam
           </div>
         )}
         <input
+          id={inputId}
           className={`
             w-full bg-slate-800 border text-white rounded-lg py-2.5 
             ${Icon ? 'pl-10' : 'pl-3'} pr-3

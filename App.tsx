@@ -22,18 +22,33 @@ function App() {
 
   const validateUrl = (inputUrl: string, selectedPlatform: Platform): boolean => {
     if (!inputUrl) return false;
-    if (selectedPlatform === Platform.YOUTUBE) {
-      return inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be');
+    try {
+        const urlToCheck = inputUrl.startsWith('http') ? inputUrl : `https://${inputUrl}`;
+        const urlObj = new URL(urlToCheck);
+        const hostname = urlObj.hostname.toLowerCase();
+        
+        if (selectedPlatform === Platform.YOUTUBE) {
+            return hostname === 'youtube.com' || 
+                   hostname === 'www.youtube.com' || 
+                   hostname === 'm.youtube.com' || 
+                   hostname === 'youtu.be' ||
+                   hostname === 'www.youtu.be';
+        }
+        if (selectedPlatform === Platform.INSTAGRAM) {
+            return hostname === 'instagram.com' || 
+                   hostname === 'www.instagram.com';
+        }
+        return false;
+    } catch (e) {
+        return false;
     }
-    if (selectedPlatform === Platform.INSTAGRAM) {
-      return inputUrl.includes('instagram.com');
-    }
-    return false;
   };
 
   const handleDownload = async () => {
+    if (downloadState.isDownloading) return;
+
     if (!validateUrl(url, platform)) {
-      setDownloadState(prev => ({ ...prev, error: `Invalid ${platform} URL provided.` }));
+      setDownloadState(prev => ({ ...prev, error: `Invalid ${platform} URL provided. Please check the format.` }));
       return;
     }
 
@@ -46,7 +61,7 @@ function App() {
       setMetadata(meta);
 
       // Step 2: Start Download Process (Simulated)
-      await simulateDownloadProcess((prog, stat) => {
+      const downloadUrl = await simulateDownloadProcess((prog, stat) => {
         setDownloadState(prev => ({
           ...prev,
           progress: prog,
@@ -54,7 +69,7 @@ function App() {
         }));
       });
 
-      setDownloadState(prev => ({ ...prev, status: 'completed' }));
+      setDownloadState(prev => ({ ...prev, status: 'completed', downloadUrl }));
     } catch (err) {
       setDownloadState({
         isDownloading: false,
@@ -167,9 +182,24 @@ function App() {
                         </div>
                       </div>
                     )}
+                    
+                    {/* Primary Action: Download Button */}
+                    {downloadState.downloadUrl && (
+                      <a 
+                        href={downloadState.downloadUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full max-w-sm mt-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition-all duration-200 flex items-center justify-center gap-2 transform hover:scale-[1.02]"
+                      >
+                        <Download size={20} />
+                        Save Processed File
+                      </a>
+                    )}
+
+                    {/* Secondary Action: Reset */}
                     <button 
                       onClick={reset}
-                      className="mt-2 px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors border border-slate-700"
+                      className="px-6 py-2 bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white rounded-lg font-medium transition-colors border border-transparent hover:border-slate-700"
                     >
                       Download Another
                     </button>
@@ -199,11 +229,11 @@ function App() {
                 {!downloadState.isDownloading && (
                   <button
                     onClick={handleDownload}
-                    disabled={!url}
+                    disabled={!url || downloadState.isDownloading}
                     className={`
                       w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3
                       transition-all duration-300 transform active:scale-[0.98]
-                      ${!url 
+                      ${!url || downloadState.isDownloading
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed' 
                         : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/25'
                       }

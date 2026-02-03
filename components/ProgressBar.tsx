@@ -1,17 +1,20 @@
 import React from 'react';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { DownloadStatus } from '../types';
 
 interface ProgressBarProps {
   progress: number;
-  status: string;
+  status: DownloadStatus;
 }
 
-const getStatusText = (status: string) => {
+const getStatusText = (status: DownloadStatus) => {
   switch (status) {
     case 'fetching_info': return 'Fetching metadata...';
     case 'downloading': return 'Downloading media stream...';
     case 'converting': return 'Processing with FFmpeg...';
     case 'completed': return 'Download ready!';
+    case 'error': return 'Error occurred';
+    case 'idle': return 'Ready';
     default: return 'Processing...';
   }
 };
