@@ -1,0 +1,5 @@
+{
+  "name": "StreamSaver UI",
+  "description": "A modern, responsive React frontend for a video downloader application, featuring platform selection, quality options, and real-time progress simulation.",
+  "requestFramePermissions": []
+}
